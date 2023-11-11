@@ -42,6 +42,8 @@ private slots:
 
     void on_actionBreadthFirstSearch_triggered();
 
+    void on_actionDepthFirstSearch_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer *timer;

@@ -1,5 +1,6 @@
 #include <fstream>
 #include <queue>
+#include <stack>
 
 #include "Graph.h"
 
@@ -300,4 +301,116 @@ std::vector<int> Graph::BFS(int start, int end)
     }
 
     return std::vector<int>();
+}
+
+int Graph::GetFirstUnvisitedNode_DFS(const std::vector<int> &flag)
+{
+    for (size_t index = 1; index <= flag.size(); ++index)
+        if (flag[index] == -1)
+            return index;
+
+    return INT_MAX;
+}
+
+int Graph::GetUnvisitedNeighbour_DFS(const std::vector<int> &neighbours, const std::vector<int> &flag)
+{
+    for (size_t index = 0; index < neighbours.size(); ++index)
+        if (flag[neighbours[index] + 1] != 1)
+            return index;
+
+    return INT_MAX;
+}
+
+void Graph::DFS()
+{
+    std::vector<int> topologicalSort;
+
+    int numberOfNodes = m_nodes.size();
+    std::vector<int> flag(numberOfNodes + 1);
+
+    for (int index = 1; index <= numberOfNodes; ++index)
+    {
+        flag[index] = -1;
+    }
+
+    int start = GetFirstUnvisitedNode_DFS(flag);
+
+    std::stack<int> S;
+
+    if (start != INT_MAX)
+    {
+        flag[start] = 0;
+        S.push(start);
+    }
+
+    while (start != INT_MAX)
+    {
+        while (!S.empty())
+        {
+            int currentNode = S.top();
+
+            std::vector<int> neighbours = m_adjacencyList[currentNode - 1];
+            for (int neighbour : neighbours)
+            {
+                if (flag[neighbour + 1] == -1) // Am găsit un vecin nevizitat
+                {
+                    flag[neighbour + 1] = 0; // Vizitat, dar nu analizat complet
+                    S.push(neighbour + 1);
+                    break;
+                }
+                else if (flag[neighbour + 1] == 0) // Am găsit un ciclu
+                {
+                    // Determinarea ciclului epuizând toate nodurile
+                    // inserate în stivă
+                    std::vector<int> cycle;
+                    cycle.push_back(neighbour + 1);
+
+                    while (!S.empty())
+                    {
+                        int value = S.top();
+                        cycle.push_back(value);
+                        if (value == neighbour + 1)
+                            break;
+
+                        S.pop();
+                    }
+
+                    std::reverse(cycle.begin(), cycle.end());
+
+                    std::ofstream fout("dfs_path.out");
+
+                    fout << "Found a cycle: ";
+                    for (int node : cycle)
+                        fout << node << " ";
+
+                    topologicalSort.clear();
+                    return;
+                }
+            }
+
+            int unvisitedNeighbour = GetUnvisitedNeighbour_DFS(neighbours, flag);
+            if (neighbours.empty() ||
+                (!neighbours.empty() && unvisitedNeighbour == INT_MAX))
+            {
+                flag[currentNode] = 1;
+                topologicalSort.push_back(currentNode);
+                S.pop();
+            }
+        }
+
+        start = GetFirstUnvisitedNode_DFS(flag);
+        if (start != INT_MAX)
+        {
+            flag[start] = 0;
+            S.push(start);
+        }
+    }
+
+    std::reverse(topologicalSort.begin(), topologicalSort.end());
+
+    std::ofstream fout("dfs_path.out");
+
+    fout << "Topological sort: ";
+    for (int node : topologicalSort)
+        fout << node << " ";
 }

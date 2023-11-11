@@ -348,3 +348,9 @@ void MainWindow::on_actionBreadthFirstSearch_triggered()
     isBfsRunning = true;
 }
 
+
+void MainWindow::on_actionDepthFirstSearch_triggered()
+{
+    graph.DFS();
+}
+

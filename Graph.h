@@ -44,6 +44,12 @@ public:
 public:
     std::vector<int> BFS(int start, int end);
 
+    int GetFirstUnvisitedNode_DFS(const std::vector<int>& flag);
+    int GetUnvisitedNeighbour_DFS(const std::vector<int>& neighbours,
+                                   const std::vector<int>& flag);
+
+    void DFS();
+
 private:
     // G = (N, A)
     std::vector<Node> m_nodes; // N = mulţimea nodurilor
