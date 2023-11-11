@@ -1,6 +1,6 @@
 #include "Node.h"
 
-int Node::radius = 20;
+const int Node::radius = 20;
 
 Node::Node()
 {

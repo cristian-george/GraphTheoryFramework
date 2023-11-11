@@ -40,6 +40,8 @@ private slots:
     void unweightedRadioButtonClicked();
     void weightedRadioButtonClicked();
 
+    void on_actionBreadthFirstSearch_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
@@ -47,5 +49,7 @@ private:
     Graph graph;
     Node firstNode, lastNode;
     bool isDrawingNode, isDrawingEdge;
+
+    bool isBfsRunning;
 };
 #endif // MAINWINDOW_H

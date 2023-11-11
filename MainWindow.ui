@@ -264,17 +264,17 @@
     <property name="title">
      <string>Algorithms</string>
     </property>
-    <addaction name="actionParcurgere_generic"/>
-    <addaction name="actionDepth_First_Search"/>
+    <addaction name="actionBreadthFirstSearch"/>
+    <addaction name="actionDepthFirstSearch"/>
    </widget>
    <addaction name="menuAlgoritmi"/>
   </widget>
-  <action name="actionParcurgere_generic">
+  <action name="actionBreadthFirstSearch">
    <property name="text">
     <string>Breadth-First Search</string>
    </property>
   </action>
-  <action name="actionDepth_First_Search">
+  <action name="actionDepthFirstSearch">
    <property name="text">
     <string>Depth-First Search</string>
    </property>

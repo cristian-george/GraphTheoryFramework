@@ -27,6 +27,9 @@ public:
     void GenerateAdjacencyMatrix();
     void GenerateAdjacencyList();
 
+    void PrintAdjacencyMatrix();
+    void PrintAdjacencyLists();
+
     std::vector<std::vector<bool>>& GetAdjacencyMatrix();
     std::vector<std::vector<int>>& GetAdjacencyList();
 
@@ -38,12 +41,16 @@ public:
 
     void Clear();
 
-private:
-    std::vector<Node> m_nodes;
-    std::vector<Edge> m_edges;
+public:
+    std::vector<int> BFS(int start, int end);
 
-    bool m_isDirected;
-    bool m_isWeighted;
+private:
+    // G = (N, A)
+    std::vector<Node> m_nodes; // N = mulţimea nodurilor
+    std::vector<Edge> m_edges; // A = mulţimea muchiilor/arcelor
+
+    bool m_isDirected; // 1 - orientat, 0 - neorientat
+    bool m_isWeighted; // 1 - ponderat, 0 - fără ponderi
 
     std::vector<std::vector<bool>> m_adjacencyMatrix;
     std::vector<std::vector<int>> m_adjacencyList;

@@ -19,7 +19,7 @@ public:
     bool operator!=(const Node& node) const;
 
 public:
-    static int radius;
+    static const int radius;
 
 private:
     QPointF m_coordinates;

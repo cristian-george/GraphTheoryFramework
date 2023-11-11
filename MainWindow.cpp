@@ -1,5 +1,7 @@
 #include <QPainter>
 #include <QPainterPath>
+#include <QDebug>
+#include <QMessageBox>
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -17,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     isDrawingNode = false;
     isDrawingEdge = false;
+
+    isBfsRunning = false;
 
     connectSlots();
 }
@@ -152,8 +156,22 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
                 timer->start(1000);
 
                 connect(timer, &QTimer::timeout, this, [&]() {
-                    // Add edge
-                    addEdge();
+                    if (isBfsRunning)
+                    {
+                        // qDebug(QString::number(firstNode.GetValue()).toStdString().c_str());
+                        // qDebug(QString::number(lastNode.GetValue()).toStdString().c_str());
+
+                        std::vector<int> path = graph.BFS(firstNode.GetValue(), lastNode.GetValue());
+                        isBfsRunning = false;
+
+                        if (path.empty())
+                            QMessageBox::information(this, "BFS", "No path found!");
+                    }
+                    else
+                    {
+                        // Add edge
+                        addEdge();
+                    }
 
                     firstNode = Node();
                     lastNode = Node();
@@ -162,14 +180,16 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
                     ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode.GetValue()));
                     update();
                 });
+
+
             }
         }
 
     graph.GenerateAdjacencyMatrix();
-    // PrintAdjacencyMatrix();
+    graph.PrintAdjacencyMatrix();
 
     graph.GenerateAdjacencyList();
-    // PrintAdjacencyList();
+    graph.PrintAdjacencyLists();
 }
 
 
@@ -320,5 +340,11 @@ void MainWindow::weightedRadioButtonClicked()
     ui->inputWeightLabel->setHidden(false);
     ui->inputWeightTextEdit->setHidden(false);
     update();
+}
+
+
+void MainWindow::on_actionBreadthFirstSearch_triggered()
+{
+    isBfsRunning = true;
 }
 
