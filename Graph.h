@@ -42,6 +42,7 @@ public:
     void Clear();
 
 public:
+    std::vector<int> GetPath_BFS(int end, const std::vector<int>& cameFrom);
     std::vector<int> BFS(int start, int end);
 
     int GetFirstUnvisitedNode_DFS(const std::vector<int>& flag);

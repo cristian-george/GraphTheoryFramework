@@ -236,6 +236,29 @@ void Graph::Clear()
     m_edges.clear();
 }
 
+std::vector<int> Graph::GetPath_BFS(int end, const std::vector<int> &cameFrom)
+{
+    std::vector<int> path;
+
+    int currentNode = end;
+    int pred = cameFrom[currentNode];
+
+    if (pred == -1)
+        return std::vector<int>();
+
+    path.push_back(currentNode);
+
+    while (pred != -1)
+    {
+        path.push_back(pred);
+        pred = cameFrom[pred];
+    }
+
+    std::reverse(path.begin(), path.end());
+
+    return path;
+}
+
 std::vector<int> Graph::BFS(int start, int end)
 {
     int numberOfNodes = m_nodes.size();
@@ -273,31 +296,17 @@ std::vector<int> Graph::BFS(int start, int end)
 
     if (distance[end] != INT_MAX)
     {
-        std::vector<int> path;
-
-        int currentNode = end;
-        int pred = cameFrom[currentNode];
-
-        if (pred == -1)
-            return std::vector<int>();
-
-        path.push_back(currentNode);
-
-        while (pred != -1)
+        std::vector<int> path = GetPath_BFS(end, cameFrom);
+        if (!path.empty()) // Dacă avem drum de la "start" la "end", afişăm în fişier
         {
-            path.push_back(pred);
-            pred = cameFrom[pred];
+            std::ofstream fout("bfs_path.out");
+
+            fout << "Path from node " << start << " to node " << end << ": ";
+            for (int node : path)
+                fout << node << " ";
+
+            return path;
         }
-
-        std::reverse(path.begin(), path.end());
-
-        std::ofstream fout("bfs_path.out");
-
-        fout << "Path from node " << start << " to node " << end << ": ";
-        for (int node : path)
-            fout << node << " ";
-
-        return path;
     }
 
     return std::vector<int>();
@@ -412,5 +421,7 @@ void Graph::DFS()
 
     fout << "Topological sort: ";
     for (int node : topologicalSort)
+    {
         fout << node << " ";
+    }
 }
