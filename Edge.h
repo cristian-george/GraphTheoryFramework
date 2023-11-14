@@ -1,27 +1,27 @@
+#pragma once
+
 #ifndef EDGE_H
 #define EDGE_H
 
 #include <float.h>
 
-#include "Node.h"
-
 class Edge
 {
 public:
     Edge();
-    Edge(const Node& firstNode, const Node& lastNode, float cost=FLT_MIN);
+    Edge(int firstNode, int lastNode, float cost=FLT_MAX);
 
-    const Node& GetFirstNode() const;
-    const Node& GetLastNode() const;
+    int GetFirstNode() const;
+    int GetLastNode() const;
     float GetWeight() const;
 
-    void SetFirstNode(const Node& node);
-    void SetLastNode(const Node& node);
+    void SetFirstNode(int node);
+    void SetLastNode(int node);
     void SetWeight(float weight);
 
 private:
-    Node m_firstNode;
-    Node m_lastNode;
+    int m_firstNode;
+    int m_lastNode;
     float m_weight;
 };
 

@@ -1,6 +1,3 @@
-#include <QPainter>
-#include <QPainterPath>
-#include <QDebug>
 #include <QMessageBox>
 
 #include "MainWindow.h"
@@ -14,16 +11,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->inputWeightLabel->setHidden(true);
     ui->inputWeightTextEdit->setHidden(true);
 
-    ui->firstNodeLabel->setText("First node: " + QString::number(firstNode.GetValue()));
-    ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode.GetValue()));
-
-    isDrawingNode = false;
-    isDrawingEdge = false;
-
-    isBfsRunning = false;
+    ui->firstNodeLabel->setText("First node: " + QString::number(firstNode));
+    ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode));
 
     connectSlots();
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -31,245 +24,212 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::connectSlots()
-{
-    connect(
-        ui->undirectedRadioButton, &QRadioButton::clicked,
-        this, &MainWindow::undirectedRadioButtonClicked);
-
-    connect(
-        ui->directedRadioButton, &QRadioButton::clicked,
-        this, &MainWindow::directedRadioButtonClicked);
-
-    connect(
-        ui->unweightedRadioButton, &QRadioButton::clicked,
-        this, &MainWindow::unweightedRadioButtonClicked);
-
-    connect(
-        ui->weightedRadioButton, &QRadioButton::clicked,
-        this, &MainWindow::weightedRadioButtonClicked);
-}
-
-void MainWindow::addNode(QPoint point)
-{
-    Node node(point);
-
-    if (graph.ExistsNodeCloseTo(node) == false)
-    {
-        isDrawingNode = true;
-
-        graph.AddNode(node);
-        update();
-    }
-}
-
-
-void MainWindow::moveNode(QPoint point)
-{
-    firstNode.SetCoordinates(point);
-    graph.GetNodes()[firstNode.GetValue() - 1] = firstNode;
-
-    for(size_t index = 0; index < graph.GetEdges().size(); ++index)
-    {
-        if (graph.GetEdges()[index].GetFirstNode().GetValue() == firstNode.GetValue())
-            graph.GetEdges()[index].SetFirstNode(firstNode);
-        else
-            if (graph.GetEdges()[index].GetLastNode().GetValue() == firstNode.GetValue())
-                graph.GetEdges()[index].SetLastNode(firstNode);
-    }
-
-    update();
-    firstNode = Node();
-}
-
-void MainWindow::addEdge()
-{
-    if (graph.ExistsEdge(Edge(firstNode, lastNode)) == false && firstNode != lastNode)
-    {
-        float weight = FLT_MIN;
-        if (graph.IsWeighted())
-            weight = ui->inputWeightTextEdit->toPlainText().toFloat();
-
-        if (graph.IsDirected() == true)
-            graph.AddEdge(Edge(firstNode, lastNode, weight));
-        else
-        {
-            graph.AddEdge(Edge(firstNode, lastNode, weight));
-            graph.AddEdge(Edge(lastNode, firstNode, weight));
-        }
-
-        isDrawingEdge = true;
-    }
-}
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 {
     isDrawingNode = false;
     isDrawingEdge = false;
 
+    if (!isBfsRunning)
+        bfs_path.clear();
+
     if (event->button() == Qt::RightButton)
     {
-        // Add node
-        QPoint point = event->pos();
-        addNode(point);
+        // Reţinem poziţia click-ului de mouse în variabila "qpoint"
+        QPoint qpoint = event->pos();
+
+        // Apelăm metoda de adăugare a unui nod în graf
+        // Nodul va fi afişat pe ecran la poziţia dată de "qpoint"
+        isDrawingNode = graph.AddNode(qpoint.x(), qpoint.y());
     }
     else
         if (event->button() == Qt::LeftButton)
         {
-            QPoint point = event->pos();
-            Node foundNode;
+            // Reţinem poziţia click-ului de mouse în variabila "qpoint"
+            QPoint qpoint = event->pos();
 
-            std::vector<Node> nodes = graph.GetNodes();
-            for (const Node& node : nodes)
-            {
-                if (abs(node.GetCoordinates().x() - point.x()) < 2 * Node::radius &&
-                    abs(node.GetCoordinates().y() - point.y()) < 2 * Node::radius)
-                {
-                    foundNode = node;
-                    break;
-                }
-            }
+            int foundNode = graph.GetNodeCloseTo(qpoint.x(), qpoint.y());
 
-            if (foundNode.GetValue() == -1)
+            if (foundNode == -1 && firstNode != -1)
             {
-                if (firstNode.GetValue() != -1 && graph.ExistsNodeCloseTo(Node(point)) == false)
-                {
-                    // Move the node to a given position
-                    moveNode(point);
-                }
+                // Mutăm nodul selectat la poziţia "qpoint"
+                graph.MoveNode(firstNode, qpoint.x(), qpoint.y());
+
+                firstNode = -1;
+
+                ui->firstNodeLabel->setText("First node: " + QString::number(firstNode));
+                this->update();
 
                 return;
             }
 
-            if (firstNode.GetValue() == -1)
+            if (firstNode == -1)
             {
+                // Selecţia primului nod
                 firstNode = foundNode;
-                ui->firstNodeLabel->setText("First node: " + QString::number(firstNode.GetValue()));
+
+                ui->firstNodeLabel->setText("First node: " + QString::number(firstNode));
+                this->update();
+
+                return;
             }
-            else
-            {
-                lastNode = foundNode;
-                ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode.GetValue()));
 
-                timer = new QTimer(this);
-                timer->setSingleShot(true);
-                timer->start(1000);
+            // Selecţia celui de-al doilea nod
+            lastNode = foundNode;
+            ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode));
 
-                connect(timer, &QTimer::timeout, this, [&]() {
-                    if (isBfsRunning)
-                    {
-                        // qDebug(QString::number(firstNode.GetValue()).toStdString().c_str());
-                        // qDebug(QString::number(lastNode.GetValue()).toStdString().c_str());
+            timer = new QTimer(this);
+            timer->setSingleShot(true);
+            timer->start(1000);
 
-                        std::vector<int> path = graph.BFS(firstNode.GetValue(), lastNode.GetValue());
-                        isBfsRunning = false;
+            connect(timer, &QTimer::timeout, this, [&]() {
+                if (isBfsRunning)
+                {
+                    /* Metoda BFS determină drumul de la "firstNode" la "lastNode"
+                    / Atenţie! Indexarea se face de la 0. Din valorile etichetelor
+                    / date ca parametru trebuie să scădem o unitate
+                    */
+                    bfs_path = graph.BFS(firstNode - 1, lastNode - 1);
+                    this->update();
 
-                        if (path.empty())
-                            QMessageBox::information(this, "BFS", "No path found!");
-                    }
-                    else
-                    {
-                        // Add edge
-                        addEdge();
-                    }
+                    if (bfs_path.empty())
+                        QMessageBox::information(this, "BFS", "No path found!");
 
-                    firstNode = Node();
-                    lastNode = Node();
+                    isBfsRunning = false;
+                }
+                else
+                {
+                    // Adăugăm o muchie sau un arc între cele două noduri selectate
+                    // Dacă graful este ponderat se va afişa şi valoarea "weight"
+                    float weight = FLT_MAX;
+                    if (graph.IsWeighted())
+                        weight = ui->inputWeightTextEdit->toPlainText().toFloat();
 
-                    ui->firstNodeLabel->setText("First node: " + QString::number(firstNode.GetValue()));
-                    ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode.GetValue()));
-                    update();
-                });
+                    isDrawingEdge = graph.AddEdge(firstNode, lastNode, weight);
+                }
 
+                // Resetăm cele două noduri selectate
+                firstNode = -1;
+                lastNode = -1;
 
-            }
+                ui->firstNodeLabel->setText("First node: " + QString::number(firstNode));
+                ui->lastNodeLabel->setText("Last node: " + QString::number(lastNode));
+
+                this->update();
+            });
         }
-
-    graph.GenerateAdjacencyMatrix();
-    graph.PrintAdjacencyMatrix();
-
-    graph.GenerateAdjacencyList();
-    graph.PrintAdjacencyLists();
-}
-
-
-void MainWindow::drawNode(const Node &node, Qt::GlobalColor color)
-{
-    QPainter painter(this);
-
-    qreal x = node.GetCoordinates().x();
-    qreal y = node.GetCoordinates().y();
-
-    QRect rect(x - Node::radius,
-               y - Node::radius,
-               2 * Node::radius,
-               2 * Node::radius);
-
-    painter.setPen(QPen(Qt::black));
-    painter.setBrush(QBrush(color));
-    painter.drawEllipse(rect);
-
-    painter.setFont(QFont("Times", 12, QFont::Bold));
-    painter.drawText(rect, Qt::AlignCenter, QString::number(node.GetValue()));
-}
-
-
-void MainWindow::drawEdge(const Edge &edge, Qt::GlobalColor color)
-{
-    QPen pen(color, 2);
-
-    QPainter painter(this);
-    painter.setPen(pen);
-
-    QLineF straightLine(edge.GetFirstNode().GetCoordinates(), edge.GetLastNode().GetCoordinates());
-    straightLine.setLength(straightLine.length() - Node::radius);
-
-    qreal mX = (edge.GetFirstNode().GetCoordinates().x() + straightLine.p2().x()) / 2;
-    qreal mY = (edge.GetFirstNode().GetCoordinates().y() + straightLine.p2().y()) / 2;
-
-    qreal dX = edge.GetLastNode().GetCoordinates().x() - edge.GetFirstNode().GetCoordinates().x();
-    qreal dY = edge.GetLastNode().GetCoordinates().y() - edge.GetFirstNode().GetCoordinates().y();
-
-    qreal distance = sqrt(pow(dX, 2) + pow(dY, 2));
-
-    qreal cX = -distance / 10 * (dY / distance) + mX;
-    qreal cY = distance / 10 * (dX / distance) + mY;
-
-    if (graph.IsDirected())
-    {
-        QPointF controlPoint(cX, cY);
-        QLineF ghostLine(controlPoint, edge.GetLastNode().GetCoordinates());
-        ghostLine.setLength(ghostLine.length() - Node::radius);
-
-        double angle = ::acos(ghostLine.dx() / ghostLine.length());
-
-        if (ghostLine.dy() >= 0)
-            angle = (M_PI * 2) - angle;
-
-        qreal arrowSize = 10;
-        QPointF arrowP1 = ghostLine.p2() - QPointF(sin(angle + M_PI / 3) * arrowSize, cos(angle + M_PI / 3) * arrowSize);
-        QPointF arrowP2 = ghostLine.p2() - QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize, cos(angle + M_PI - M_PI / 3) * arrowSize);
-
-        QPainterPath curvedLine;
-        curvedLine.moveTo(edge.GetFirstNode().GetCoordinates());
-        curvedLine.quadTo(controlPoint, ghostLine.p2());
-
-        painter.strokePath(curvedLine, pen);
-        painter.drawLine(ghostLine.p2(), arrowP1);
-        painter.drawLine(ghostLine.p2(), arrowP2);
-    }
-    else
-        painter.drawLine(straightLine);
-
-    if (graph.IsWeighted())
-    {
-        painter.setFont(QFont("Times", 12, QFont::Bold));
-        painter.drawText(QPointF((mX + cX) / 2, (mY + cY) / 2), QString::number(edge.GetWeight()));
-    }
 }
 
 
 void MainWindow::paintEvent(QPaintEvent*)
+{
+    drawEdges();
+    drawNodes();
+
+    drawBFS();
+
+    this->update();
+}
+
+
+void MainWindow::undirectedRadioButtonClicked()
+{
+    graph.SetDirected(false);
+    graph.Clear();
+    bfs_path.clear();
+    this->update();
+}
+
+
+void MainWindow::directedRadioButtonClicked()
+{
+    graph.SetDirected(true);
+    graph.Clear();
+    bfs_path.clear();
+    this->update();
+}
+
+
+void MainWindow::unweightedRadioButtonClicked()
+{
+    graph.SetWeighted(false);
+    graph.Clear();
+    bfs_path.clear();
+
+    ui->inputWeightLabel->setHidden(true);
+    ui->inputWeightTextEdit->setHidden(true);
+    this->update();
+}
+
+
+void MainWindow::weightedRadioButtonClicked()
+{
+    graph.SetWeighted(true);
+    graph.Clear();
+    bfs_path.clear();
+
+    ui->inputWeightLabel->setHidden(false);
+    ui->inputWeightTextEdit->setHidden(false);
+    ui->inputWeightTextEdit->setText("0");
+    this->update();
+}
+
+
+void MainWindow::breadthFirstSearchTriggered()
+{
+    isBfsRunning = true;
+}
+
+
+void MainWindow::depthFirstSearchTriggered()
+{
+    std::vector<int> topologicalSort = graph.DFS();
+
+    if (topologicalSort.empty())
+    {
+        QMessageBox::information(this,
+                                 "Topological sort",
+                                 "The graph cannot be sorted in topological order. "
+                                 "It contains a circuit! ");
+    }
+
+    // Determinăm coordonatele centrului ferestrei
+    int xCenterScreen = size().width() / 2;
+    int yCenterScreen = size().height() / 2;
+
+    int numberOfNodes = topologicalSort.size();
+
+    // Afişăm nodurile în ordinea corespunzătoare sortării topologice
+    for (int i = 0; i < numberOfNodes; ++i)
+    {
+        int x = xCenterScreen + 100 * (i - numberOfNodes / 2);
+
+        int node = topologicalSort[i] + 1;
+        graph.MoveNode(node, x, yCenterScreen);
+    }
+}
+
+
+void MainWindow::printAdjacencyMatrixTriggered()
+{
+    graph.PrintAdjacencyMatrix();
+}
+
+
+void MainWindow::printAdjacencyListsTriggered()
+{
+    graph.PrintAdjacencyLists();
+}
+
+
+void MainWindow::clearGraphTriggered()
+{
+    graph.Clear();
+    this->update();
+}
+
+
+void MainWindow::drawEdges()
 {
     const std::vector<Edge>& edges = graph.GetUniqueEdges();
 
@@ -282,10 +242,14 @@ void MainWindow::paintEvent(QPaintEvent*)
 
         if (isDrawingEdge == true)
         {
-            drawEdge(edges[edges.size() - 1], Qt::red);
+            drawEdge(edges[edges.size() - 1], Qt::cyan);
         }
     }
+}
 
+
+void MainWindow::drawNodes()
+{
     const std::vector<Node>& nodes = graph.GetNodes();
 
     if (nodes.size())
@@ -297,60 +261,41 @@ void MainWindow::paintEvent(QPaintEvent*)
 
         if (isDrawingNode == true)
         {
-            drawNode(nodes[nodes.size() - 1], Qt::red);
+            drawNode(nodes[nodes.size() - 1], Qt::cyan);
         }
     }
 }
 
 
-void MainWindow::undirectedRadioButtonClicked()
+void MainWindow::drawBFS()
 {
-    graph.SetDirected(false);
-    graph.Clear();
+    /* Afişăm cu o altă culoare nodurile şi muchiile/arcele
+     * din componenţa drumului determinat cu algoritmul BFS
+    */
+    if (!bfs_path.empty())
+    {
+        for (size_t i = 0; i < bfs_path.size() - 1; ++i)
+        {
+            int node1 = bfs_path[i] + 1;
+            int node2 = bfs_path[i + 1] + 1;
+            drawEdge(graph.GetEdge(node1, node2), Qt::magenta);
+        }
 
-    update();
+        for (size_t i = 0; i < bfs_path.size(); ++i)
+        {
+            int node = bfs_path[i] + 1;
+            drawNode(graph.GetNode(node), Qt::magenta);
+        }
+    }
+
+    /* Colorăm cu verde nodul de plecare selectat
+     * Colorăm cu roşu nodul de sosire selectat
+    */
+    if (isBfsRunning)
+    {
+        if (firstNode != -1)
+            drawNode(graph.GetNode(firstNode), Qt::green);
+        if (lastNode != -1)
+            drawNode(graph.GetNode(lastNode), Qt::red);
+    }
 }
-
-
-void MainWindow::directedRadioButtonClicked()
-{
-    graph.SetDirected(true);
-    graph.Clear();
-
-    update();
-}
-
-
-void MainWindow::unweightedRadioButtonClicked()
-{
-    graph.SetWeighted(false);
-    graph.Clear();
-
-    ui->inputWeightLabel->setHidden(true);
-    ui->inputWeightTextEdit->setHidden(true);
-    update();
-}
-
-
-void MainWindow::weightedRadioButtonClicked()
-{
-    graph.SetWeighted(true);
-    graph.Clear();
-
-    ui->inputWeightLabel->setHidden(false);
-    ui->inputWeightTextEdit->setHidden(false);
-    update();
-}
-
-
-void MainWindow::on_actionBreadthFirstSearch_triggered()
-{
-    isBfsRunning = true;
-}
-
-
-void MainWindow::on_actionDepthFirstSearch_triggered()
-{
-    graph.DFS();
-}
-

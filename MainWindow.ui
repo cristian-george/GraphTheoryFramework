@@ -18,6 +18,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QRadioButton" name="directedRadioButton">
     <property name="enabled">
@@ -257,7 +260,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAlgoritmi">
@@ -267,6 +270,15 @@
     <addaction name="actionBreadthFirstSearch"/>
     <addaction name="actionDepthFirstSearch"/>
    </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionPrintAdjacencyMatrix"/>
+    <addaction name="actionPrintAdjacencyLists"/>
+    <addaction name="actionClearGraph"/>
+   </widget>
+   <addaction name="menuOptions"/>
    <addaction name="menuAlgoritmi"/>
   </widget>
   <action name="actionBreadthFirstSearch">
@@ -277,6 +289,21 @@
   <action name="actionDepthFirstSearch">
    <property name="text">
     <string>Depth-First Search</string>
+   </property>
+  </action>
+  <action name="actionPrintAdjacencyMatrix">
+   <property name="text">
+    <string>Print adjacency matrix to file</string>
+   </property>
+  </action>
+  <action name="actionPrintAdjacencyLists">
+   <property name="text">
+    <string>Print adjacency lists to file</string>
+   </property>
+  </action>
+  <action name="actionClearGraph">
+   <property name="text">
+    <string>Clear graph</string>
    </property>
   </action>
  </widget>

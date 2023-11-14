@@ -1,18 +1,20 @@
+#pragma once
+
 #ifndef NODE_H
 #define NODE_H
 
-#include <QPoint>
+#include "Point.h"
 
 class Node
 {
 public:
     Node();
-    Node(const QPointF& coordinates, int value = -1);
+    Node(const Point<int>& coordinates, int value = -1);
 
-    QPointF GetCoordinates() const;
+    Point<int> GetCoordinates() const;
     int GetValue() const;
 
-    void SetCoordinates(const QPointF& coordinates);
+    void SetCoordinates(const Point<int>& coordinates);
     void SetValue(int value);
 
     bool operator==(const Node& node) const;
@@ -22,7 +24,7 @@ public:
     static const int radius;
 
 private:
-    QPointF m_coordinates;
+    Point<int> m_coordinates;
     int m_value;
 };
 

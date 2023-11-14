@@ -7,7 +7,6 @@
 #include <QTimer>
 
 #include "Graph.h"
-#include "Node.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,17 +20,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void connectSlots();
-
-    void mouseReleaseEvent(QMouseEvent* event);
-    void paintEvent(QPaintEvent* event);
-
-    void drawNode(const Node& node, Qt::GlobalColor color);
-    void drawEdge(const Edge& edge, Qt::GlobalColor color);
-
-    void addNode(QPoint point);
-    void moveNode(QPoint point);
-    void addEdge();
+protected:
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
     void undirectedRadioButtonClicked();
@@ -40,18 +31,34 @@ private slots:
     void unweightedRadioButtonClicked();
     void weightedRadioButtonClicked();
 
-    void on_actionBreadthFirstSearch_triggered();
+    void breadthFirstSearchTriggered();
+    void depthFirstSearchTriggered();
 
-    void on_actionDepthFirstSearch_triggered();
+    void printAdjacencyMatrixTriggered();
+    void printAdjacencyListsTriggered();
+
+    void clearGraphTriggered();
+
+private:
+    void connectSlots();
+
+    void drawEdges();
+    void drawNodes();
+    void drawBFS();
+
+    void drawNode(const Node& node, Qt::GlobalColor color);
+    void drawEdge(const Edge& edge, Qt::GlobalColor color);
 
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
 
-    Graph graph;
-    Node firstNode, lastNode;
-    bool isDrawingNode, isDrawingEdge;
+    bool isDrawingNode = false, isDrawingEdge = false;
+    bool isBfsRunning = false;
 
-    bool isBfsRunning;
+    Graph graph;
+    int firstNode = -1, lastNode = -1;
+
+    std::vector<int> bfs_path;
 };
 #endif // MAINWINDOW_H

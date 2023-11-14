@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -9,47 +11,60 @@
 
 class Graph
 {
+    using AdjacencyMatrix = std::vector<std::vector<bool>>;
+    using AdjacencyLists = std::vector<std::vector<int>>;
+
 public:
     Graph();
 
-    void AddNode(const Node& node);
-    void AddEdge(const Edge& edge);
+    Node GetNode(int value);
+    Edge GetEdge(int node1, int node2);
 
-    std::vector<Node>& GetNodes();
-    std::vector<Edge>& GetEdges();
+    std::vector<Node> GetNodes();
+    std::vector<Edge> GetUniqueEdges();
 
-    void SetDirected(bool directed);
-    void SetWeighted(bool weighted);
+    int GetNodeCloseTo(int x, int y);
 
     bool IsDirected() const;
     bool IsWeighted() const;
 
-    void GenerateAdjacencyMatrix();
-    void GenerateAdjacencyList();
+    bool AddNode(int x, int y);
+    bool AddEdge(int node1, int node2, float weight = FLT_MAX);
+
+    bool MoveNode(int node, int x, int y);
+
+    void SetDirected(bool directed);
+    void SetWeighted(bool weighted);
 
     void PrintAdjacencyMatrix();
     void PrintAdjacencyLists();
 
-    std::vector<std::vector<bool>>& GetAdjacencyMatrix();
-    std::vector<std::vector<int>>& GetAdjacencyList();
-
-    bool ExistsNodeCloseTo(const Node& otherNode);
-    bool ExistsEdge(const Edge& otherEdge);
-
-    bool AreEdgesEqual(const Edge& edge1, const Edge& edge2);
-    std::vector<Edge> GetUniqueEdges();
-
     void Clear();
 
+private:
+    const std::vector<Edge>& GetEdges();
+
+    const AdjacencyMatrix& GetAdjacencyMatrix();
+    const AdjacencyLists& GetAdjacencyLists();
+
+    bool ExistsNodeCloseTo(const Point<int>& point);
+    bool ExistsEdge(int node1, int node2);
+
+    bool AreEdgesEqual(const Edge& edge1, const Edge& edge2);
+
+    void GenerateAdjacencyMatrix();
+    void GenerateAdjacencyList();
+
 public:
-    std::vector<int> GetPath_BFS(int end, const std::vector<int>& cameFrom);
     std::vector<int> BFS(int start, int end);
+    std::vector<int> DFS();
 
-    int GetFirstUnvisitedNode_DFS(const std::vector<int>& flag);
-    int GetUnvisitedNeighbour_DFS(const std::vector<int>& neighbours,
-                                   const std::vector<int>& flag);
+private:
+    std::vector<int> GetBfsPath(int end, const std::vector<int>& cameFrom);
 
-    void DFS();
+    int GetUnvisitedNode(const std::vector<int>& visited);
+    int GetUnanalyzedNeighbour(const std::vector<int>& neighbours,
+                               const std::vector<int>& visited);
 
 private:
     // G = (N, A)
@@ -59,8 +74,8 @@ private:
     bool m_isDirected; // 1 - orientat, 0 - neorientat
     bool m_isWeighted; // 1 - ponderat, 0 - fără ponderi
 
-    std::vector<std::vector<bool>> m_adjacencyMatrix;
-    std::vector<std::vector<int>> m_adjacencyList;
+    AdjacencyMatrix m_adjacencyMatrix; // matricea de adiacenţă
+    AdjacencyLists m_adjacencyLists; // listele de adiacenţă
 };
 
 #endif // GRAPH_H
