@@ -4,7 +4,7 @@
 #include "Converter.cpp"
 #include "MainWindow.h"
 
-void MainWindow::drawNode(const Node &node, Qt::GlobalColor color)
+void MainWindow::drawNode(const Node &node, QColor color)
 {
     QPainter painter(this);
 
@@ -25,7 +25,7 @@ void MainWindow::drawNode(const Node &node, Qt::GlobalColor color)
 }
 
 
-void MainWindow::drawEdge(const Edge &edge, Qt::GlobalColor color)
+void MainWindow::drawEdge(const Edge &edge, QColor color)
 {
     QPoint p1 = ToQPoint(graph.GetNode(edge.GetFirstNode()).GetCoordinates());
     QPoint p2 = ToQPoint(graph.GetNode(edge.GetLastNode()).GetCoordinates());
@@ -90,4 +90,18 @@ void MainWindow::drawEdge(const Edge &edge, Qt::GlobalColor color)
     {
         painter.drawLine(straightLine);
     }
+}
+
+
+QVector<QColor> MainWindow::randomColors(int count)
+{
+    QVector<QColor> colors;
+    float currentHue = 0.0;
+    for (int i = 0; i < count; i++)
+    {
+        colors.push_back(QColor::fromHslF(currentHue, 1.0, 0.5));
+        currentHue += 0.618033988749895f;
+        currentHue = std::fmod(currentHue, 1.0f);
+    }
+    return colors;
 }

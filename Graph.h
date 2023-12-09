@@ -8,6 +8,7 @@
 
 #include "Edge.h"
 #include "Node.h"
+#include "ConnectedComponent.h"
 
 class Graph
 {
@@ -55,9 +56,15 @@ private:
     void GenerateAdjacencyMatrix();
     void GenerateAdjacencyList();
 
+    // Operatorul ! inversează graful
+    Graph operator!();
+
 public:
-    std::vector<int> BFS(int start, int end);
-    std::vector<int> DFS();
+    std::vector<int> ShortPathBetween(int start, int end);
+    std::vector<int> TopologicalSort();
+
+    std::vector<ConnectedComponent> ConnectedComponents();
+    std::vector<ConnectedComponent> StronglyConnectedComponents();
 
 private:
     std::vector<int> GetBfsPath(int end, const std::vector<int>& cameFrom);
@@ -65,6 +72,8 @@ private:
     int GetUnvisitedNode(const std::vector<int>& visited);
     int GetUnanalyzedNeighbour(const std::vector<int>& neighbours,
                                const std::vector<int>& visited);
+
+    int GetUnvisitedNode(const std::vector<bool>& visited);
 
 private:
     // G = (N, A)

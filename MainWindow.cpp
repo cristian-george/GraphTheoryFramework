@@ -30,8 +30,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
     isDrawingNode = false;
     isDrawingEdge = false;
 
-    if (!isBfsRunning)
+    if (!isShortPathRunning)
         bfs_path.clear();
+
+    if (!isCCRunning)
+        ccToColorize.clear();
 
     if (event->button() == Qt::RightButton)
     {
@@ -83,19 +86,19 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
             timer->start(1000);
 
             connect(timer, &QTimer::timeout, this, [&]() {
-                if (isBfsRunning)
+                if (isShortPathRunning)
                 {
                     /* Metoda BFS determină drumul de la "firstNode" la "lastNode"
                     / Atenţie! Indexarea se face de la 0. Din valorile etichetelor
                     / date ca parametru trebuie să scădem o unitate
                     */
-                    bfs_path = graph.BFS(firstNode - 1, lastNode - 1);
+                    bfs_path = graph.ShortPathBetween(firstNode - 1, lastNode - 1);
                     this->update();
 
                     if (bfs_path.empty())
                         QMessageBox::information(this, "BFS", "No path found!");
 
-                    isBfsRunning = false;
+                    isShortPathRunning = false;
                 }
                 else
                 {
@@ -123,10 +126,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 
 void MainWindow::paintEvent(QPaintEvent*)
 {
+    /* Edge based */
     drawEdges();
-    drawNodes();
+    drawShortPathBFS();
 
-    drawBFS();
+    /* Node based */
+    drawNodes();
+    drawConnectedComponents();
 
     this->update();
 }
@@ -175,15 +181,15 @@ void MainWindow::weightedRadioButtonClicked()
 }
 
 
-void MainWindow::breadthFirstSearchTriggered()
+void MainWindow::shortPathTriggered()
 {
-    isBfsRunning = true;
+    isShortPathRunning = true;
 }
 
 
-void MainWindow::depthFirstSearchTriggered()
+void MainWindow::topologicalSortTriggered()
 {
-    std::vector<int> topologicalSort = graph.DFS();
+    std::vector<int> topologicalSort = graph.TopologicalSort();
 
     if (topologicalSort.empty())
     {
@@ -207,6 +213,26 @@ void MainWindow::depthFirstSearchTriggered()
         int node = topologicalSort[i] + 1;
         graph.MoveNode(node, x, yCenterScreen);
     }
+}
+
+void MainWindow::connectedComponentsTriggered()
+{
+    // Determinăm componentele conexe
+    isCCRunning = true;
+    ccToColorize = graph.ConnectedComponents();
+    this->update();
+
+    isCCRunning = false;
+}
+
+void MainWindow::stronglyConnectedComponentsTriggered()
+{
+    // Determinăm componentele tare conexe
+    isCCRunning = true;
+    ccToColorize = graph.StronglyConnectedComponents();
+    this->update();
+
+    isCCRunning = false;
 }
 
 
@@ -267,7 +293,7 @@ void MainWindow::drawNodes()
 }
 
 
-void MainWindow::drawBFS()
+void MainWindow::drawShortPathBFS()
 {
     /* Afişăm cu o altă culoare nodurile şi muchiile/arcele
      * din componenţa drumului determinat cu algoritmul BFS
@@ -291,11 +317,33 @@ void MainWindow::drawBFS()
     /* Colorăm cu verde nodul de plecare selectat
      * Colorăm cu roşu nodul de sosire selectat
     */
-    if (isBfsRunning)
+    if (isShortPathRunning)
     {
         if (firstNode != -1)
             drawNode(graph.GetNode(firstNode), Qt::green);
         if (lastNode != -1)
             drawNode(graph.GetNode(lastNode), Qt::red);
+    }
+}
+
+
+void MainWindow::drawConnectedComponents()
+{
+    if (!ccToColorize.empty())
+    {
+        int count = ccToColorize.size();
+
+        auto colors = randomColors(count);
+
+        for (size_t i = 0; i < ccToColorize.size(); ++i)
+        {
+            // Determin componenta i şi extrag nodurile din aceasta
+            auto nodes = ccToColorize[i].GetNodes();
+            for (size_t j = 0; j < nodes.size(); ++j)
+            {
+                int node = nodes[j];
+                drawNode(graph.GetNode(node), colors[i]);
+            }
+        }
     }
 }

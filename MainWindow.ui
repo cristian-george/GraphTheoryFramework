@@ -260,15 +260,17 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuAlgoritmi">
+   <widget class="QMenu" name="menuTraversal">
     <property name="title">
-     <string>Algorithms</string>
+     <string>Traversal</string>
     </property>
-    <addaction name="actionBreadthFirstSearch"/>
-    <addaction name="actionDepthFirstSearch"/>
+    <addaction name="actionShortPath"/>
+    <addaction name="actionTopologicalSort"/>
+    <addaction name="actionConnectedComponents"/>
+    <addaction name="actionStronglyConnectedComponents"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -278,17 +280,25 @@
     <addaction name="actionPrintAdjacencyLists"/>
     <addaction name="actionClearGraph"/>
    </widget>
+   <widget class="QMenu" name="menuMST">
+    <property name="title">
+     <string>MST</string>
+    </property>
+    <addaction name="actionPrim"/>
+    <addaction name="actionKruskal"/>
+   </widget>
    <addaction name="menuOptions"/>
-   <addaction name="menuAlgoritmi"/>
+   <addaction name="menuTraversal"/>
+   <addaction name="menuMST"/>
   </widget>
-  <action name="actionBreadthFirstSearch">
+  <action name="actionShortPath">
    <property name="text">
-    <string>Breadth-First Search</string>
+    <string>Short path</string>
    </property>
   </action>
-  <action name="actionDepthFirstSearch">
+  <action name="actionTopologicalSort">
    <property name="text">
-    <string>Depth-First Search</string>
+    <string>Topological sort</string>
    </property>
   </action>
   <action name="actionPrintAdjacencyMatrix">
@@ -306,11 +316,31 @@
     <string>Clear graph</string>
    </property>
   </action>
+  <action name="actionConnectedComponents">
+   <property name="text">
+    <string>Connected components</string>
+   </property>
+  </action>
+  <action name="actionStronglyConnectedComponents">
+   <property name="text">
+    <string>Strongly connected components</string>
+   </property>
+  </action>
+  <action name="actionPrim">
+   <property name="text">
+    <string>Prim</string>
+   </property>
+  </action>
+  <action name="actionKruskal">
+   <property name="text">
+    <string>Kruskal</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="isWeightedGroup"/>
   <buttongroup name="isDirectedGroup"/>
+  <buttongroup name="isWeightedGroup"/>
  </buttongroups>
 </ui>

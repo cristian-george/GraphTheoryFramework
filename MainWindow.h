@@ -30,9 +30,12 @@ private slots:
 
     void unweightedRadioButtonClicked();
     void weightedRadioButtonClicked();
+    
+    void shortPathTriggered();
+    void topologicalSortTriggered();
 
-    void breadthFirstSearchTriggered();
-    void depthFirstSearchTriggered();
+    void connectedComponentsTriggered();
+    void stronglyConnectedComponentsTriggered();
 
     void printAdjacencyMatrixTriggered();
     void printAdjacencyListsTriggered();
@@ -44,21 +47,27 @@ private:
 
     void drawEdges();
     void drawNodes();
-    void drawBFS();
+    void drawShortPathBFS();
+    void drawConnectedComponents();
 
-    void drawNode(const Node& node, Qt::GlobalColor color);
-    void drawEdge(const Edge& edge, Qt::GlobalColor color);
+    void drawNode(const Node& node, QColor color);
+    void drawEdge(const Edge& edge, QColor color);
+
+    QVector<QColor> randomColors(int count);
 
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
 
     bool isDrawingNode = false, isDrawingEdge = false;
-    bool isBfsRunning = false;
+    bool isShortPathRunning = false;
+    bool isCCRunning = false;
 
     Graph graph;
     int firstNode = -1, lastNode = -1;
 
     std::vector<int> bfs_path;
+
+    std::vector<ConnectedComponent> ccToColorize;
 };
 #endif // MAINWINDOW_H

@@ -30,12 +30,22 @@ void MainWindow::connectSlots()
 
 
     connect(
-        ui->actionBreadthFirstSearch, &QAction::triggered,
-        this, &MainWindow::breadthFirstSearchTriggered);
+        ui->actionShortPath, &QAction::triggered,
+        this, &MainWindow::shortPathTriggered);
 
     connect(
-        ui->actionDepthFirstSearch, &QAction::triggered,
-        this, &MainWindow::depthFirstSearchTriggered);
+        ui->actionTopologicalSort, &QAction::triggered,
+        this, &MainWindow::topologicalSortTriggered);
+
+
+    connect(
+        ui->actionConnectedComponents, &QAction::triggered,
+        this, &MainWindow::connectedComponentsTriggered);
+
+    connect(
+        ui->actionStronglyConnectedComponents, &QAction::triggered,
+        this, &MainWindow::stronglyConnectedComponentsTriggered);
+
 
     connect(
         ui->actionClearGraph, &QAction::triggered,
