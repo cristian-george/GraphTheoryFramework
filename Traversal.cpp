@@ -10,7 +10,7 @@ std::vector<Edge> Graph::ShortPathBetween(int start, int end)
 {
     int n = m_nodes.size();
     if (n == 0)
-        return std::vector<Edge>();
+        throw "Graph is empty!";
 
     std::vector<int> cameFrom(n);
     std::vector<int> distance(n);
@@ -47,7 +47,7 @@ std::vector<Edge> Graph::ShortPathBetween(int start, int end)
     if (distance[end] != INT_MAX)
         return GetPath(end, cameFrom);
 
-    return std::vector<Edge>();
+    throw "There is no path available!";
 }
 
 std::vector<int> Graph::TopologicalSort()

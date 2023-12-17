@@ -7,7 +7,12 @@ std::vector<Edge> Graph::Dijkstra(int start, int end)
 {
     int n = m_nodes.size();
     if (n == 0)
-        return std::vector<Edge>();
+        throw "Graph is empty!";
+
+    // Verificarea existenţei arcelor de cost negativ
+    for (auto edge : m_edges)
+        if (edge.GetWeight() < 0)
+            throw "Graph contains negative edges!";
 
     std::vector<float> distance(n, FLT_MAX);
     std::vector<int> cameFrom(n, -1);
@@ -51,16 +56,16 @@ std::vector<Edge> Graph::Dijkstra(int start, int end)
         return GetPath(end, cameFrom);
     }
 
-    return std::vector<Edge>();
+    throw "There is no path available!";
 }
 
 std::vector<Edge> Graph::BellmanFord(int start, int end)
 {
     int n = m_nodes.size();
     if (n == 0)
-        return std::vector<Edge>();
+        throw "Graph is empty!";
 
-    std::vector<float> distance(n, (float)INT_MAX);
+    std::vector<float> distance(n, FLT_MAX);
     std::vector<int> cameFrom(n, -1);
 
     distance[start] = 0;
@@ -73,8 +78,9 @@ std::vector<Edge> Graph::BellmanFord(int start, int end)
 
     do
     {
-        if (cnt_cycle > 2 * n)
-            return std::vector<Edge>();
+        // Verificare existenţă circuit de cost negativ
+        if (cnt_cycle > n)
+            throw "Graph contains a negative cycle!";
 
         tempDistance = distance;
 
@@ -100,7 +106,6 @@ std::vector<Edge> Graph::BellmanFord(int start, int end)
     while (tempDistance != distance);
 
 
-
     // Există drum de la start -> end <=> distanţa finită
     if (distance[end] != FLT_MAX)
     {
@@ -108,26 +113,17 @@ std::vector<Edge> Graph::BellmanFord(int start, int end)
         return GetPath(end, cameFrom);
     }
 
-    return std::vector<Edge>();
+    throw "There is no path available!";
 }
 
 std::vector<Edge> Graph::FloydWarshall(int start, int end)
 {
     int n = m_nodes.size();
     if (n == 0)
-        return std::vector<Edge>();
+        throw "Graph is empty!";
 
     std::vector<std::vector<float>> distance(n);
     std::vector<std::vector<int>> cameFrom(n);
-
-    /*
-     * n = 5
-     *      [0,0,0,0,0]
-     *      [0,0,0,0,0]
-     *  d = [0,0,0,0,0]
-     *      [0,0,0,0,0]
-     *      [0,0,0,0,0]
-    */
 
     for (int i = 0; i < n; ++i)
     {
@@ -164,10 +160,15 @@ std::vector<Edge> Graph::FloydWarshall(int start, int end)
         }
     }
 
+    // Verificare existenţă circuit de cost negativ
+    for (int i = 0; i < n; i++)
+        if (distance[i][i] < 0)
+            throw "Graph contains a negative cycle!";
+
     if (distance[start][end] != FLT_MAX)
         return GetPath(start, end, cameFrom);
 
-    return std::vector<Edge>();
+    throw "There is no path available!";
 }
 
 std::vector<Edge> Graph::GetPath(int start, int end, const std::vector<std::vector<int> > &cameFrom)

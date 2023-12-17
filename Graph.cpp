@@ -51,10 +51,11 @@ std::vector<Edge> Graph::GetUniqueEdges()
 
 int Graph::GetNodeCloseTo(int x, int y)
 {
+    int offset = 10;
     for (const Node& node : m_nodes)
     {
-        if (abs(node.GetCoordinates().GetX() - x) < 2 * Node::radius + 10 &&
-            abs(node.GetCoordinates().GetY() - y) < 2 * Node::radius + 10)
+        if (abs(node.GetCoordinates().GetX() - x) < 2 * Node::radius + offset &&
+            abs(node.GetCoordinates().GetY() - y) < 2 * Node::radius + offset)
         {
             return node.GetValue();
         }
@@ -332,22 +333,30 @@ Graph Graph::operator!()
 std::vector<Edge> Graph::GetPathBetween(int start, int end, EPathFinding algorithm)
 {
     std::vector<Edge> edges;
-    switch (algorithm)
+
+    try
     {
-    case EPathFinding::None:
-        break;
-    case EPathFinding::BFS:
-        edges = ShortPathBetween(start, end);
-        break;
-    case EPathFinding::Dijkstra:
-        edges = Dijkstra(start, end);
-        break;
-    case EPathFinding::BellmanFord:
-        edges = Dijkstra(start, end);
-        break;
-    case EPathFinding::FloydWarshall:
-        edges = Dijkstra(start, end);
-        break;
+        switch (algorithm)
+        {
+        case EPathFinding::None:
+            break;
+        case EPathFinding::BFS:
+            edges = ShortPathBetween(start, end);
+            break;
+        case EPathFinding::Dijkstra:
+            edges = Dijkstra(start, end);
+            break;
+        case EPathFinding::BellmanFord:
+            edges = BellmanFord(start, end);
+            break;
+        case EPathFinding::FloydWarshall:
+            edges = FloydWarshall(start, end);
+            break;
+        }
+    }
+    catch (const char* e)
+    {
+        throw e;
     }
 
     return edges;

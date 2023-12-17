@@ -109,18 +109,21 @@ void MainWindow::applyChanges()
     connect(timer, &QTimer::timeout, this, [&]() {
         if (algorithm != EPathFinding::None)
         {
-            edgesToColorize = graph.GetPathBetween(firstNode - 1,
-                                                   lastNode - 1,
-                                                   algorithm);
+            try
+            {
+                edgesToColorize = graph.GetPathBetween(firstNode - 1,
+                                                       lastNode - 1,
+                                                       algorithm);
+            } catch (const char* e)
+            {
+                QMessageBox::information(this, "Path finding", e);
+            }
 
             this->update();
 
             // Resetăm algoritmul selectat
             isColorizerRunning = false;
             algorithm = EPathFinding::None;
-
-            if (edgesToColorize.empty())
-                QMessageBox::information(this, "Path finding", "No path found!");
         }
         else
         {

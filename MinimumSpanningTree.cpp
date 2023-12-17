@@ -5,9 +5,18 @@
 
 std::vector<Edge> Graph::Prim(int start)
 {
+    if (m_isDirected)
+        throw "Graph is oriented!";
+
+    if (!m_isWeighted)
+        throw "Graph is not weighted!";
+
     int n = m_nodes.size();
-    if (n == 0)
-        return std::vector<Edge>();
+    if (n < 2)
+        throw "Graph has less than 2 nodes!";
+
+    if (ConnectedComponents().size() != 1)
+        throw "Graph is not connected!";
 
     // A' = în acest vector reţinem muchiile ce formează arborele parţial
     std::vector<Edge> primEdges;
@@ -56,7 +65,6 @@ std::vector<Edge> Graph::Prim(int start)
         if (node != start)
         {
             int pred = cameFrom[node];
-            // primEdges.push_back(Edge(pred + 1, node + 1, costs[node]));
             primEdges.emplace_back(pred + 1, node + 1, costs[node]);
         }
 

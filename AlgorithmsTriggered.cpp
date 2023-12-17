@@ -61,8 +61,17 @@ void MainWindow::stronglyConnectedComponentsTriggered()
 
 void MainWindow::primTriggered()
 {
+    try
+    {
+        edgesToColorize = graph.Prim(0);
+    }
+    catch (const char* e)
+    {
+        QMessageBox::information(this, "Minimum spanning tree", e);
+        return;
+    }
+
     isColorizerRunning = true;
-    edgesToColorize = graph.Prim(0);
     this->update();
 
     isColorizerRunning = false;
@@ -70,8 +79,17 @@ void MainWindow::primTriggered()
 
 void MainWindow::kruskalTriggered()
 {
+    try
+    {
+        edgesToColorize = graph.Kruskal();
+    }
+    catch (const char* e)
+    {
+        QMessageBox::information(this, "Minimum spanning tree", e);
+        return;
+    }
+
     isColorizerRunning = true;
-    // edgesToColorize = graph.Kruskal();
     this->update();
 
     isColorizerRunning = false;
