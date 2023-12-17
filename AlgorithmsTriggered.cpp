@@ -62,7 +62,7 @@ void MainWindow::stronglyConnectedComponentsTriggered()
 void MainWindow::primTriggered()
 {
     isColorizerRunning = true;
-    // edgesToColorize = graph.Prim(0);
+    edgesToColorize = graph.Prim(0);
     this->update();
 
     isColorizerRunning = false;

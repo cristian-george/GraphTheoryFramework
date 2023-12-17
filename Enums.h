@@ -5,6 +5,9 @@ enum class EPathFinding
 {
     None = 0,
     BFS,
+    Dijkstra,
+    BellmanFord,
+    FloydWarshall,
 };
 
 #endif // ENUMS_H

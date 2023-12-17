@@ -69,6 +69,13 @@ public:
     std::vector<ConnectedComponent> ConnectedComponents();
     std::vector<ConnectedComponent> StronglyConnectedComponents();
 
+    // MST
+    std::vector<Edge> Prim(int start);
+    std::vector<Edge> Kruskal();
+
+    // Minimum cost paths
+
+
     // Finding path
     std::vector<Edge> GetPath(int end,
                               const std::vector<int>& cameFrom);
