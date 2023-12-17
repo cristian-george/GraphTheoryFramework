@@ -339,6 +339,9 @@ std::vector<Edge> Graph::GetPathBetween(int start, int end, EPathFinding algorit
     case EPathFinding::BFS:
         edges = ShortPathBetween(start, end);
         break;
+    case EPathFinding::Dijkstra:
+        edges = Dijkstra(start, end);
+        break;
     }
 
     return edges;

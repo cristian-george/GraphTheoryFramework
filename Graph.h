@@ -74,7 +74,9 @@ public:
     std::vector<Edge> Kruskal();
 
     // Minimum cost paths
-
+    std::vector<Edge> Dijkstra(int start, int end);
+    std::vector<Edge> BellmanFord(int start, int end);
+    std::vector<Edge> FloydWarshall(int start, int end);
 
     // Finding path
     std::vector<Edge> GetPath(int end,

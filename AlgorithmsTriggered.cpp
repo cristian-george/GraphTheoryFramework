@@ -80,7 +80,7 @@ void MainWindow::kruskalTriggered()
 
 void MainWindow::dijkstraTriggered()
 {
-    // algorithm = EPathFinding::Dijkstra;
+    algorithm = EPathFinding::Dijkstra;
     isColorizerRunning = true;
 }
 
