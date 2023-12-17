@@ -342,6 +342,12 @@ std::vector<Edge> Graph::GetPathBetween(int start, int end, EPathFinding algorit
     case EPathFinding::Dijkstra:
         edges = Dijkstra(start, end);
         break;
+    case EPathFinding::BellmanFord:
+        edges = Dijkstra(start, end);
+        break;
+    case EPathFinding::FloydWarshall:
+        edges = Dijkstra(start, end);
+        break;
     }
 
     return edges;

@@ -81,7 +81,9 @@ public:
     // Finding path
     std::vector<Edge> GetPath(int end,
                               const std::vector<int>& cameFrom);
-
+    std::vector<Edge> GetPath(int start,
+                              int end,
+                              const std::vector<std::vector<int>>& cameFrom);
     std::vector<Edge> GetPathBetween(int start,
                                      int end,
                                      EPathFinding algorithm);

@@ -86,12 +86,12 @@ void MainWindow::dijkstraTriggered()
 
 void MainWindow::bellmanFordTriggered()
 {
-    // algorithm = EPathFinding::BellmanFord;
+    algorithm = EPathFinding::BellmanFord;
     isColorizerRunning = true;
 }
 
 void MainWindow::floydWarshallTriggered()
 {
-    // algorithm = EPathFinding::FloydWarshall;
+    algorithm = EPathFinding::FloydWarshall;
     isColorizerRunning = true;
 }

@@ -8,6 +8,9 @@ class PathHelper
 public:
     // Traversal Path
     static std::vector<int> GetPath(int end, const std::vector<int>& cameFrom);
+    static std::vector<int> GetPath(int start,
+                                    int end,
+                                    const std::vector<std::vector<int>>& cameFrom);
 
     // Topological sort helper methods
     static int GetUnvisitedNode(const std::vector<int>& visited);

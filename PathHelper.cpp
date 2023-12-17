@@ -25,6 +25,26 @@ std::vector<int> PathHelper::GetPath(int end, const std::vector<int> &cameFrom)
     return path;
 }
 
+std::vector<int> PathHelper::GetPath(int start, int end, const std::vector<std::vector<int> > &cameFrom)
+{
+    if (cameFrom[start][end] == -1)
+        return std::vector<int>();
+
+    std::vector<int> path;
+    path.push_back(end);
+
+    int pred = cameFrom[start][end];
+    while (pred != -1)
+    {
+        path.push_back(pred);
+        pred = cameFrom[start][pred];
+    }
+
+    std::reverse(path.begin(), path.end());
+
+    return path;
+}
+
 int PathHelper::GetUnvisitedNode(const std::vector<int>& visited)
 {
     for (size_t node = 0; node < visited.size(); ++node)
