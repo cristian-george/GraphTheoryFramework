@@ -93,9 +93,9 @@ void MainWindow::drawEdge(const Edge &edge, QColor color)
 }
 
 
-QVector<QColor> MainWindow::randomColors(int count)
+std::vector<QColor> MainWindow::randomColors(int count)
 {
-    QVector<QColor> colors;
+    std::vector<QColor> colors;
     float currentHue = 0.0;
     for (int i = 0; i < count; i++)
     {

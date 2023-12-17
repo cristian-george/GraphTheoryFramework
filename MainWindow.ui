@@ -287,9 +287,18 @@
     <addaction name="actionPrim"/>
     <addaction name="actionKruskal"/>
    </widget>
+   <widget class="QMenu" name="menuMinimumCostPaths">
+    <property name="title">
+     <string>Minimum cost paths</string>
+    </property>
+    <addaction name="actionDijkstra"/>
+    <addaction name="actionBellmanFord"/>
+    <addaction name="actionFloydWarshall"/>
+   </widget>
    <addaction name="menuOptions"/>
    <addaction name="menuTraversal"/>
    <addaction name="menuMST"/>
+   <addaction name="menuMinimumCostPaths"/>
   </widget>
   <action name="actionShortPath">
    <property name="text">
@@ -334,6 +343,21 @@
   <action name="actionKruskal">
    <property name="text">
     <string>Kruskal</string>
+   </property>
+  </action>
+  <action name="actionDijkstra">
+   <property name="text">
+    <string>Dijkstra</string>
+   </property>
+  </action>
+  <action name="actionBellmanFord">
+   <property name="text">
+    <string>Bellman-Ford</string>
+   </property>
+  </action>
+  <action name="actionFloydWarshall">
+   <property name="text">
+    <string>Floyd-Warshall</string>
    </property>
   </action>
  </widget>

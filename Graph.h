@@ -8,11 +8,13 @@
 
 #include "Edge.h"
 #include "Node.h"
+#include "Enums.h"
 #include "ConnectedComponent.h"
 
 class Graph
 {
     using AdjacencyMatrix = std::vector<std::vector<bool>>;
+    using CostMatrix = std::vector<std::vector<float>>;
     using AdjacencyLists = std::vector<std::vector<int>>;
 
 public:
@@ -56,24 +58,24 @@ private:
     void GenerateAdjacencyMatrix();
     void GenerateAdjacencyList();
 
-    // Operatorul ! inversează graful
+    // Operatorul ! returnează graful invers
     Graph operator!();
 
 public:
-    std::vector<int> ShortPathBetween(int start, int end);
+    // Traversal
+    std::vector<Edge> ShortPathBetween(int start, int end);
     std::vector<int> TopologicalSort();
 
     std::vector<ConnectedComponent> ConnectedComponents();
     std::vector<ConnectedComponent> StronglyConnectedComponents();
 
-private:
-    std::vector<int> GetBfsPath(int end, const std::vector<int>& cameFrom);
+    // Finding path
+    std::vector<Edge> GetPath(int end,
+                              const std::vector<int>& cameFrom);
 
-    int GetUnvisitedNode(const std::vector<int>& visited);
-    int GetUnanalyzedNeighbour(const std::vector<int>& neighbours,
-                               const std::vector<int>& visited);
-
-    int GetUnvisitedNode(const std::vector<bool>& visited);
+    std::vector<Edge> GetPathBetween(int start,
+                                     int end,
+                                     EPathFinding algorithm);
 
 private:
     // G = (N, A)
@@ -84,6 +86,7 @@ private:
     bool m_isWeighted; // 1 - ponderat, 0 - fără ponderi
 
     AdjacencyMatrix m_adjacencyMatrix; // matricea de adiacenţă
+    CostMatrix m_costMatrix; // matricea de costuri / valoare-adiacenţă
     AdjacencyLists m_adjacencyLists; // listele de adiacenţă
 };
 

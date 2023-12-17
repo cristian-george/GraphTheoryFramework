@@ -6,16 +6,20 @@ CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Traversal.cpp \
     ConnectedComponent.cpp \
-    GUI/Converter.cpp \
-    GUI/DrawingHelper.cpp \
-    GUI/SlotsConnection.cpp \
+    AlgorithmsTriggered.cpp \
+    Converter.cpp \
+    DrawingHelper.cpp \
+    RadioButtonsTriggered.cpp \
+    SlotsConnection.cpp \
     Edge.cpp \
     Graph.cpp \
     Node.cpp \
+    PathHelper.cpp \
     Point.cpp \
     main.cpp \
     MainWindow.cpp
@@ -23,9 +27,11 @@ SOURCES += \
 HEADERS += \
     ConnectedComponent.h \
     Edge.h \
+    Enums.h \
     Graph.h \
     MainWindow.h \
     Node.h \
+    PathHelper.h \
     Point.h
 
 FORMS += \

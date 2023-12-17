@@ -48,6 +48,27 @@ void MainWindow::connectSlots()
 
 
     connect(
+        ui->actionPrim, &QAction::triggered,
+        this, &MainWindow::primTriggered);
+
+    connect(
+        ui->actionKruskal, &QAction::triggered,
+        this, &MainWindow::kruskalTriggered);
+
+
+    connect(
+        ui->actionDijkstra, &QAction::triggered,
+        this, &MainWindow::dijkstraTriggered);
+
+    connect(
+        ui->actionBellmanFord, &QAction::triggered,
+        this, &MainWindow::bellmanFordTriggered);
+    connect(
+        ui->actionFloydWarshall, &QAction::triggered,
+        this, &MainWindow::floydWarshallTriggered);
+
+
+    connect(
         ui->actionClearGraph, &QAction::triggered,
         this, &MainWindow::clearGraphTriggered);
 }

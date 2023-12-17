@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "Graph.h"
+#include "Enums.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,6 +38,13 @@ private slots:
     void connectedComponentsTriggered();
     void stronglyConnectedComponentsTriggered();
 
+    void primTriggered();
+    void kruskalTriggered();
+
+    void dijkstraTriggered();
+    void bellmanFordTriggered();
+    void floydWarshallTriggered();
+
     void printAdjacencyMatrixTriggered();
     void printAdjacencyListsTriggered();
 
@@ -45,29 +53,41 @@ private slots:
 private:
     void connectSlots();
 
+private:
+    // Metodă care tratează 1. adăugarea muchiilor în graf
+    //                      2. lansarea algoritmilor BFS, Dijkstra, Bellman-Ford, Floyd-Warshall
+    void applyChanges();
+
+private:
     void drawEdges();
     void drawNodes();
-    void drawShortPathBFS();
-    void drawConnectedComponents();
+
+    void colorizeNodes();
+    void colorizeEdges();
+    void colorizeConnectedComponents();
+    void removeColor();
 
     void drawNode(const Node& node, QColor color);
     void drawEdge(const Edge& edge, QColor color);
 
-    QVector<QColor> randomColors(int count);
+    std::vector<QColor> randomColors(int count);
 
 private:
     Ui::MainWindow *ui;
-    QTimer *timer;
+    QTimer *timer = nullptr;
 
     bool isDrawingNode = false, isDrawingEdge = false;
-    bool isShortPathRunning = false;
-    bool isCCRunning = false;
+    bool isColorizerRunning = false;
 
-    Graph graph;
-    int firstNode = -1, lastNode = -1;
-
-    std::vector<int> bfs_path;
-
+    std::vector<Edge> edgesToColorize;
     std::vector<ConnectedComponent> ccToColorize;
+
+private:
+    Graph graph;
+
+    int firstNode = -1;
+    int lastNode = -1;
+
+    EPathFinding algorithm = EPathFinding::None;
 };
 #endif // MAINWINDOW_H
